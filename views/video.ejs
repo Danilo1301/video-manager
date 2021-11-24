@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+
+    <title>Games</title>
+  </head>
+  <body style="background: gray;">
+
+    <div class="container bg-light p-3">
+        
+        <a href="/" type="button" class="btn btn-sm btn-outline-dark">Home</a>
+
+        <%= video.name %> <span class="badge badge-success bg-<%= video.status ? 'success' : 'warning text-dark' %>"> <%= video.status ? 'Completo' : 'Não completo' %> </span>
+
+
+    </div>
+    
+    <div class="container bg-light p-3 mt-1">
+        
+        <video id="video" width="100%" height="500" controls>
+            <source src="<%= '/video/' + video.id %>" type="video/<%= video.extension%>">
+        </video>
+
+    </div>
+
+    <div class="container bg-light p-3 mt-1">
+        <button type="button" by='-30' class="btn btn-danger time_from addby">- 30</button>
+        <button type="button" by='-5' class="btn btn-danger time_from addby">- 5</button>
+        <button type="button" by='5' class="btn btn-success time_from addby">+ 5</button>
+        <button type="button" by='30' class="btn btn-success time_from addby">+ 30</button>
+
+        <div class='row pt-3'>
+            
+            <div class='col'>
+                <input type="text" class="form-control newBoomarkName">
+            </div>
+            <div class='col-auto'>
+                <button type="button" class="btn btn-success newBoomark">Adicionar Boomark em <span id='addtime'>?</span></button>
+            </div>
+            <div class='col-auto'>
+                <button type="button" class="btn btn-warning markComplete">Mudar status para '<%= video.status ? 'Não completo' : 'Completo' %>'</button>
+            </div>
+            
+        </div>
+
+        <div class='row pt-3'>
+            
+            <button type="button" class="btn btn-primary mr-2" onclick="jumpToVideo(-1)">Anterior</button>
+            <button type="button" class="btn btn-primary" onclick="jumpToVideo(1)">Proximo</button>
+
+        </div>
+
+        <div id="boomarks" class="pd-3">
+            <!-- boomarks -->
+        </div>
+    </div>
+
+    <div id="boomark-model" style="display: none;">
+        <div class="mt-3">
+            <div class="input-group">
+                <button type="button" class="btn btn-danger remove">Remover</button>
+                <input type="text" class="form-control name" value="NAME">
+                <button type="button" class="btn btn-primary time_from">TIME_FROM</button>
+                <div class="input-group-text" id="btnGroupAddon">até</div>
+                <button type="button" class="btn btn-primary time_to">TIME_TO</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        var videoId = "<%= video.id %>";
+    </script>
+    
+    <script src="/video.js"></script>
+  </body>
+</html>
