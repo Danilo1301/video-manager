@@ -17,7 +17,7 @@
         
         <a href="/" type="button" class="btn btn-sm btn-outline-dark">Home</a>
 
-        <%= video.name %> <span class="badge badge-success bg-<%= video.status ? 'success' : 'warning text-dark' %>"> <%= video.status ? 'Completo' : 'Não completo' %> </span>
+        <%= video.name %>
 
 
     </div>
@@ -28,13 +28,16 @@
             <source src="<%= '/video/' + video.id %>" type="video/<%= video.extension%>">
         </video>
 
-    </div>
-
-    <div class="container bg-light p-3 mt-1">
         <button type="button" by='-30' class="btn btn-danger time_from addby">- 30</button>
         <button type="button" by='-5' class="btn btn-danger time_from addby">- 5</button>
         <button type="button" by='5' class="btn btn-success time_from addby">+ 5</button>
         <button type="button" by='30' class="btn btn-success time_from addby">+ 30</button>
+
+    </div>
+
+    <div class="container bg-light p-3 mt-1">
+        
+        <span class="badge badge-success bg-<%= video.status ? 'success' : 'warning text-dark' %>"> <%= video.status ? 'Completo' : 'Não completo' %> </span>
 
         <div class='row pt-3'>
             
@@ -50,15 +53,21 @@
             
         </div>
 
+        
         <div class='row pt-3'>
             
             <button type="button" class="btn btn-primary mr-2" onclick="jumpToVideo(-1)">Anterior</button>
             <button type="button" class="btn btn-primary" onclick="jumpToVideo(1)">Proximo</button>
 
         </div>
+        
 
         <div id="boomarks" class="pd-3">
             <!-- boomarks -->
+        </div>
+
+        <div class='col-auto' style="margin-top: 100px;">
+            <button type="button" class="btn-sm btn-danger deleteVideo">Excluir vídeo</button>
         </div>
     </div>
 

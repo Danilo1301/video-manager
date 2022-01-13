@@ -58,6 +58,17 @@ $(".markComplete").click(() => {
     })
 })
 
+$(".deleteVideo").click(() => {
+    
+    const value = prompt(`Delete video with ${boomarks.length} boomarks?`);
+    
+    if(value != null) {
+        fetch('/delete?id=' + videoId).then(function(response) {
+            alert("Deleted!") 
+        })
+    }
+})
+
 
 
 for (const e of $(".addby")) {
@@ -139,3 +150,4 @@ function jumpToVideo(by) {
 
     location.href = "/jump/?videoId=" + videoId + "&by=" + by;
 }
+

@@ -20,7 +20,7 @@
               <tr>
                 <th scope="col">Date</th>
                 <th scope="col">Name</th>
-                <th scope="col">Boomarks</th>
+                <th scope="col">Boomcarks</th>
                 <th scope="col">Status</th>
                 <th scope="col"></th>
               </tr>
@@ -32,7 +32,8 @@
 
                 <tr>
                     <th scope="row"> <%= d.toLocaleString() %> </th>
-                    <td> <%= video.name %> </td>
+                    <td> <%= video.name %> <b style="font-size: 10px; margin-left: 10px;" ><%= video.sizeStr %></b> </td>
+                    
                     <td> <%= video.boomarks.length %> </td>
                     <td>
                         <h6><span class="badge badge-success bg-<%= video.status ? 'success' : 'warning text-dark' %>"> <%= video.status ? 'Completo' : 'Não completo' %> </span></h6>

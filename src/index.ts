@@ -84,15 +84,29 @@ async function getVideos() {
         console.log(`Loading '${dir}'`);
 
         var videoInfoDir = Config.PATH_VIDEOS + "\\" + dir + "\\" + "video.json";
-
+        
         if(!await Config.getPathStats(videoInfoDir))
         {
-            console.log(`Could not find 'video.json'`)
+            console.log(`Could not find 'video.json' for ${dir}`)
             continue;
         }
 
         var video = Video.fromJSON(JSON.parse(fs.readFileSync(videoInfoDir, "utf8")));
+
+        var videoFileDir = Config.PATH_VIDEOS + "\\" + dir + "\\video." + video.extension;
+
+        if(!fs.existsSync(videoFileDir)) {
+
+            console.log(`Could not find video for ${dir}`)
+
+            continue;
+        }
+
+        var stats = fs.statSync(videoFileDir)
+        var fileSizeInBytes = stats.size;
         
+        video.size = fileSizeInBytes;
+        video.sizeStr = formatBytes(video.size, 0);
 
         Videos.set(dir, video);
 
@@ -200,6 +214,8 @@ export class Video {
 
     status: VideoStatus = VideoStatus.NOT_COMPLETED;
 
+    size!: number;
+    sizeStr!: string;
     fileName!: string;
     extension!: string;
     createdAt!: number;
@@ -324,3 +340,14 @@ async function moveNewVideoToVideos(video: Video) {
     video.save();
 }
 
+function formatBytes(bytes, decimals = 2) {
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
