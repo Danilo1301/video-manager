@@ -134,7 +134,10 @@ export default class {
                 return;
             }
 
-            res.render('video', {video: video});
+            const videos = this.getVideosArray();
+            const index = videos.indexOf(video);
+
+            res.render('video', {video: video, prev: videos[index-1]?.id, next: videos[index+1]?.id});
         });
 
         app.get('/', (req, res) => {
