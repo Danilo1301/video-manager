@@ -45,25 +45,31 @@ function newBoomark(boomark) {
 }
 
 $(".newBoomark").click(() => {
+    var newBoomarkEl = document.getElementsByClassName("newBoomark")[0];
     var newBoomarkName = document.getElementsByClassName("newBoomarkName")[0];
 
-    submitNewBoomark(newBoomarkName.value, videoPlayingTime);
+    var value = newBoomarkName.value;
     newBoomarkName.value = "";
+    
+    newBoomarkEl.disabled = true;
+
+    submitNewBoomark(value, videoPlayingTime, undefined, () => {
+        newBoomarkEl.disabled = false;
+    });
 })
 
 $(".markComplete").click(() => {
-    fetch('/changestatus?videoId=' + videoId).then(() => {
+    fetch(`/video/${videoId}/changestatus`).then(() => {
         //location.href = "/";
         location.reload();
     })
 })
 
 $(".deleteVideo").click(() => {
-    
     const value = prompt(`Delete video with ${boomarks.length} boomarks?`);
     
     if(value != null) {
-        fetch('/delete?id=' + videoId).then(function(response) {
+        fetch(`/video/${videoId}/delete`).then(function(response) {
             alert("Deleted!") 
         })
     }
@@ -91,7 +97,7 @@ function updateBoomarks() {
 function getBoomarks() {
     $(".boomark").remove();
 
-    fetch('/boomarks?videoId=' + videoId).then(function(response) {
+    fetch(`/video/${videoId}/boomarks`).then(function(response) {
         return response.json();
     })
     .then(function(b) {
@@ -104,24 +110,24 @@ function getBoomarks() {
 
 
 function removeBoomark(index) {
-    fetch('/delboomark?' + new URLSearchParams({videoId: videoId, index: index})).then(() => {
+    fetch(`/video/${videoId}/boomarks/remove?` + new URLSearchParams({index: index})).then(() => {
         getBoomarks();
-    })
+    });
 }
 
-function submitNewBoomark(name, at, end) {
+function submitNewBoomark(name, start, end, callback) {
     var params = {
-        videoId: videoId,
         name: name,
-        at: at
+        start: start
     }
 
     if(end) { params.end = end }
 
     console.log(params)
 
-    fetch('/addboomark?' + new URLSearchParams(params)).then(() => {
+    fetch(`/video/${videoId}/boomarks/add?` + new URLSearchParams(params)).then(() => {
         getBoomarks();
+        callback();
     })
 }
 

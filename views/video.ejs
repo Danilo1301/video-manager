@@ -25,7 +25,7 @@
     <div class="container bg-light p-3 mt-1">
         
         <video id="video" width="100%" height="500" controls>
-            <source src="<%= '/video/' + video.id %>" type="video/<%= video.extension%>">
+            <source src="<%= '/video/' + video.id + '/file' %>" type="video/<%= video.extension%>">
         </video>
 
         <button type="button" by='-30' class="btn btn-danger time_from addby">- 30</button>
@@ -56,8 +56,8 @@
         
         <div class='row pt-3'>
             
-            <a type="button" class="btn btn-primary mr-2" href="video?id=<%= prev %>">Anterior</a>
-            <a type="button" class="btn btn-primary" href="video?id=<%= next %>">Proximo</a>
+            <a type="button" class="btn btn-primary mr-2" href="/video/<%= prev %>">Anterior</a>
+            <a type="button" class="btn btn-primary" href="/video/<%= next %>">Proximo</a>
 
         </div>
         

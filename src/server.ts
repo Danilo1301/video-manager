@@ -1,32 +1,26 @@
-import express = require("express");
-import Config from "./config";
-import * as fs from "fs";
+import express from "express";
+import fs from "fs";
 
 import cookieParser = require('cookie-parser');
 import bodyParser = require('body-parser');
-import { Video } from "src";
+import { App, VIDEO_SORT_BY } from "./app";
+import { Config } from "./config";
 
-export default class {
-    app;
+export class Server {
+    public static Instance: Server;
 
-    Videos!: Map<string, Video>;
+    public app: express.Application;
 
-    getVideosArray()
-    {
-        var vids: Video[] = [];
+    public sortVideosBy: VIDEO_SORT_BY = VIDEO_SORT_BY.DATE;
 
-        this.Videos.forEach((v) => {
-            vids.push(v);
-        })
+    constructor() {
+        Server.Instance = this;
 
-        vids.sort((a, b) => { return b.createdAt - a.createdAt });
-
-        return vids;
+        this.app = express();
     }
 
-    start()
-    {
-        var app = this.app = express()
+    public async start() {
+        const app = this.app;
 
         app.set('view engine', 'ejs')
 
@@ -35,25 +29,39 @@ export default class {
 
         app.use(express.static(__dirname + "/../" + '/public'));
 
-        app.get('/jump', (req, res) => {
-            console.log(req.query);
+        app.listen(Config.PORT, Config.ADDRESS, () => {
+            console.log(`[server] Listening at ${Config.ADDRESS}:${Config.PORT}`)
+        });
 
-            const videos = this.getVideosArray();
+        //
 
-            const keys = videos.map(video => video.id)
+        app.get('/', (req, res) => {
+            if(req.query.sort) {
+                const sort = parseInt(<string>req.query.sort);
+                this.sortVideosBy = sort;
+            }
 
-            const videoId: string = req.query.videoId;
-            const by: number = parseInt(req.query.by);
+            const videos = this.getMainVideosList();
 
-            const index = keys.indexOf(videoId) + by;
-
-            const newVideoId = videos[index].id;
-
-            res.redirect('/video?id=' + newVideoId);
+            res.render('home', {videos: videos});
         });
 
         app.get('/video/:id', (req, res) => {
-            var video = this.Videos.get(req.params.id);
+            const video = App.Instance.videos.get(req.params.id);
+
+            if(!video) {
+                res.end("Could not find video " + req.params.id);
+                return;
+            }
+
+            const videos = this.getMainVideosList();
+            const index = videos.indexOf(video);
+
+            res.render('video', {video: video, prev: videos[index-1]?.id, next: videos[index+1]?.id});
+        });
+
+        app.get('/video/:id/file', (req, res) => {
+            var video = App.Instance.videos.get(req.params.id);
 
             if(!video) {
                 res.end("Could not find video " + req.params.id);
@@ -65,33 +73,39 @@ export default class {
             res.sendFile(pathFile);
         });
 
-        app.get('/delete', (req, res) => {
-            var video = this.Videos.get(req.query.id);
+        app.get('/video/:id/boomarks', (req, res) => {
+            var video = App.Instance.videos.get(req.params.id)!;
 
-            if(!video) {
-                res.end("Could not find video " + req.query.id);
-                return;
-            }
-
-            var dir = Config.PATH_VIDEOS + "\\" + video.id;
-
-            fs.rmdirSync(dir, { recursive: true });
-
-            res.end("Video deleted")
-
-            console.log(`Video ${video.id} deleted`)
-
-            this.Videos.delete(video.id)
+            res.json(video.boomarks);
         });
 
-        app.get('/boomarks', (req, res) => {
-            var video = this.Videos.get(req.query.videoId);
+        app.get('/video/:id/boomarks/add', (req, res) => {
+            var video = App.Instance.videos.get(req.params.id)!;
 
-            res.json(video!.boomarks);
+            var start = parseInt(<string>req.query.start);
+            var end = req.query.end ? parseInt(<string>req.query.end) : -1;
+
+            video.addBoomark(<string>req.query.name, start, end);
+
+            video.save();
+
+            res.json(video.boomarks);
         });
 
-        app.get('/changestatus', (req, res) => {
-            var video = this.Videos.get(req.query.videoId)!;
+        app.get('/video/:id/boomarks/remove', (req, res) => {
+            var video = App.Instance.videos.get(req.params.id)!;
+
+            var index = parseInt(<string>req.query.index);
+
+            video.removeBoomark(index);
+            
+            video.save();
+            
+            res.json(video.boomarks);
+        });
+
+        app.get('/video/:id/changestatus', (req, res) => {
+            var video = App.Instance.videos.get(req.params.id)!;
 
             video.changeStatus();
 
@@ -100,54 +114,25 @@ export default class {
             res.end();
         });
 
-        app.get('/addboomark', (req, res) => {
-            var video = this.Videos.get(req.query.videoId)!;
-
-            var start = parseInt(req.query.at);
-            var end = req.query.end ? parseInt(req.query.end) : -1;
-
-            video.addBoomark(req.query.name, start, end);
-
-            video.save();
-
-            res.json(video.boomarks);
-        });
-
-        app.get('/delboomark', (req, res) => {
-            var video = this.Videos.get(req.query.videoId)!;
-
-            console.log(`Removed boomark`, video.boomarks[req.query.index])
-
-            video.boomarks.splice(req.query.index, 1);
-            
-
-            video.save();
-            
-            res.json(video.boomarks);
-        });
-
-        app.get('/video', (req, res) => {
-            var video = this.Videos.get(req.query.id);
+        app.get('/video/:id/delete', (req, res) => {
+            var video = App.Instance.videos.get(req.params.id)!;
 
             if(!video) {
-                res.end("Could not find video " + req.query.id);
+                res.end("Could not delete video " + req.params.id);
                 return;
             }
 
-            const videos = this.getVideosArray();
-            const index = videos.indexOf(video);
+            App.Instance.deleteVideo(video.id);
 
-            res.render('video', {video: video, prev: videos[index-1]?.id, next: videos[index+1]?.id});
+            res.end("Video deleted");
         });
 
-        app.get('/', (req, res) => {
-            var vids = this.getVideosArray();
+ 
 
-            res.render('home', {videos: vids});
-        })
-          
-        app.listen(Config.PORT, Config.ADDRESS, () => {
-            console.log(`Listening at ${Config.ADDRESS}:${Config.PORT}`)
-        })
+    }
+
+    public getMainVideosList() {
+        const videos = App.Instance.getVideos(this.sortVideosBy);
+        return videos;
     }
 }
