@@ -11,6 +11,12 @@ export enum VIDEO_SORT_BY {
     SIZE
 }
 
+interface BoomarkFile {
+    videoName: string
+    path: string
+    time: number
+}
+
 export class App {
     public static Instance: App;
 
@@ -32,8 +38,8 @@ export class App {
 
         //await convertOldVersion(`C:\\Users\\danil\\Desktop\\TestArea\\convert`);
 
-        await this.loadVideos();
         await this.loadNewVideos();
+        await this.loadVideos();
         await this.processBoomarks();
     }
 
@@ -51,7 +57,7 @@ export class App {
         var dirs = fs.readdirSync(Config.PATH_VIDEOS);
     
         for (const dir of dirs) {
-            console.log(`\nLoading '${dir}'`);
+            console.log(`Loading '${dir}'`);
     
             const videoInfoDir = Config.PATH_VIDEOS + "\\" + dir + "\\" + "video.json";
             
@@ -112,17 +118,47 @@ export class App {
     private async processBoomarks() {
         console.log(`[app] processing boomarks...`);
     
+        const videos = this.getVideos(VIDEO_SORT_BY.NONE);
+
+        /*
         var vids: Video[] = [];
     
         for (const v of this.videos.values()) {
             vids.push(v);
         }
+        */
     
-        vids.sort((a, b) => { return b.createdAt - a.createdAt });
+        //vids.sort((a, b) => { return b.createdAt - a.createdAt });
     
         var boomarks = await this.getBoomarks();
         var totalBoomarks = boomarks.length;
     
+        console.log(`[app] processing ${totalBoomarks} boomarks`);
+
+        for (const boomark of boomarks) {
+
+            for (const video of videos) {
+                if(boomark.videoName != video.fileName) continue;
+
+                const time = boomark.time - video.createdAt;
+
+                console.log(`--`);
+                console.log(`video ${video.name}`);
+                console.log(`video ${video.createdAt}`);
+                console.log(`video ${boomark.time} | ${time}`);
+                console.log(`--`);
+
+                video.addBoomark(video.fileName, time, -1);
+                video.save();
+
+                fs.unlinkSync(boomark.path);
+
+                break;
+            }
+        }
+
+
+        /*
         for (const video of vids) {
             var toAddBoomarks: number[] = [];
     
@@ -143,19 +179,28 @@ export class App {
     
      
         for (let i = 0; i < totalBoomarks; i++) {
-            fs.unlinkSync(Config.PATH_BOOMARKS + "\\boomark_" + i);
+            //fs.unlinkSync(Config.PATH_BOOMARKS + "\\boomark_" + i);
             console.log("Deleted boomark_"+i)
         }
+        */
     }
 
     private async getBoomarks() {
         const dirs = fs.readdirSync(Config.PATH_BOOMARKS);
     
-        const boomarks: number[] = [];
+        const boomarks: BoomarkFile[] = [];
     
         for (const dir of dirs) {
-            const stats = await fs.statSync(Config.PATH_BOOMARKS + "\\" + dir);
-            boomarks.push(stats.birthtimeMs);
+            const path = Config.PATH_BOOMARKS + "\\" + dir;
+            const stats = await fs.statSync(path);
+            
+            const boomark: BoomarkFile = {
+                videoName: fs.readFileSync(path, "utf-8"),
+                time: stats.birthtimeMs,
+                path: path
+            }
+
+            boomarks.push(boomark);
         }
     
         return boomarks;
