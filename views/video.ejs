@@ -29,8 +29,10 @@
         </video>
 
         <button type="button" by='-30' class="btn btn-danger time_from addby">- 30</button>
+        <button type="button" by='-10' class="btn btn-danger time_from addby">- 10</button>
         <button type="button" by='-5' class="btn btn-danger time_from addby">- 5</button>
         <button type="button" by='5' class="btn btn-success time_from addby">+ 5</button>
+        <button type="button" by='10' class="btn btn-success time_from addby">+ 10</button>
         <button type="button" by='30' class="btn btn-success time_from addby">+ 30</button>
 
     </div>
@@ -39,6 +41,9 @@
         
         <span class="badge badge-success bg-<%= video.status ? 'success' : 'warning text-dark' %>"> <%= video.status ? 'Completo' : 'Não completo' %> </span>
 
+        <span class="ml-4"><%= video.sizeStr %></span>
+        <span class="ml-4"><%= path %></span>
+        
         <div class='row pt-3'>
             
             <div class='col'>

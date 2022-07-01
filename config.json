@@ -1,7 +1,7 @@
 {
-	"ADDRESS": "0.0.0.0",
-    "PORT": 3002,
-	"PATH_NEW_VIDEOS": "C:\\Users\\danil\\Desktop\\PC\\Videos\\OBS\\Unprocessed",
-    "PATH_VIDEOS": "C:\\Users\\danil\\Desktop\\PC\\Videos\\OBS\\Videos",
+	"ADDRESS": "192.168.1.10",
+    "PORT": 25565,
+	"PATH_NEW_VIDEOS": "C:\\Users\\danil\\Desktop\\PC\\Videos\\VideoManager\\Unprocessed",
+    "PATH_VIDEOS": "C:\\Users\\danil\\Desktop\\PC\\Videos\\VideoManager\\Videos",
     "PATH_BOOMARKS": "C:\\Users\\danil\\Desktop\\PC\\Projetos\\C++\\PersonalTools\\Release\\boomarks"
 }

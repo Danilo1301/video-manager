@@ -217,7 +217,7 @@ export class App {
             fs.unlinkSync(fdir);
         }
 
-        fs.rmdirSync(path);
+        fs.rmdirSync(path, { recursive: true });
 
         console.log(`[app] video ${video.id} deleted`);
 

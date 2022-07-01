@@ -57,7 +57,7 @@ export class Server {
             const videos = this.getMainVideosList();
             const index = videos.indexOf(video);
 
-            res.render('video', {video: video, prev: videos[index-1]?.id, next: videos[index+1]?.id});
+            res.render('video', {video: video, path: video.getPath(), prev: videos[index-1]?.id, next: videos[index+1]?.id});
         });
 
         app.get('/video/:id/file', (req, res) => {
