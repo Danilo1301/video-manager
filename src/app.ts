@@ -5,6 +5,8 @@ import { Video } from "./video";
 import { Server } from "./server";
 import { randomKey } from "./utils";
 
+const { getVideoDurationInSeconds } = require('get-video-duration');
+
 export enum VIDEO_SORT_BY {
     NONE,
     DATE,
@@ -75,6 +77,26 @@ export class App {
             }
 
             this.videos.set(dir, video);
+
+            if(video.duration == 0)
+            {
+                await new Promise<void>(resolve => {
+                
+                    getVideoDurationInSeconds(video.getVideoPath()).then((duration) => {
+                        video.duration = duration
+
+                        resolve();
+                    }).catch((error) => {
+                        console.log(error)
+    
+                        resolve();
+                    });
+                })
+
+                video.save();
+            }
+
+            
         }
     }
 

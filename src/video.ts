@@ -17,6 +17,7 @@ export class Video {
     public readonly size: number;
     public readonly createdAt: number;
     public get sizeStr() { return formatBytes(this.size, 0); };
+    public duration: number = 0;
 
     public status: VideoStatus = VideoStatus.NOT_COMPLETED;
 
@@ -34,10 +35,15 @@ export class Video {
             const stats = fs.statSync(this.getVideoPath())
             this.createdAt = stats.birthtimeMs;
             this.size = stats.size;
+
+            
         } else {
             this.createdAt = 0;
             this.size = 0;
         }
+
+        
+       
     }
 
     public getPath() {
@@ -60,6 +66,7 @@ export class Video {
         video.name = json.name;
         video.status = json.status;
         video.boomarks = json.boomarks;
+        video.duration = json.duration || 0;
         
         return video;
     }
@@ -102,6 +109,7 @@ export class Video {
         json.createdAt = this.createdAt;
         json.boomarks = this.boomarks;
         json.status = this.status;
+        json.duration = this.duration;
 
         return json;
     }

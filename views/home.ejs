@@ -12,40 +12,40 @@
     <title>Games</title>
   </head>
   <body style="background: gray;">
+    <div class="container bg-light">
 
-    <div class="container bg-light p-3">
-        
-        <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Name</th>
-                <th scope="col">Boomcarks</th>
-                <th scope="col">Status</th>
-                <th scope="col"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <% for(var video of videos) {%>
 
-                <% var d = new Date(video.createdAt); %>
+      <a class="btn btn-dark" href="/?sort=0">Sort NONE</a>
+      <a class="btn btn-dark" href="/?sort=1">Sort DATE</a>
+      <a class="btn btn-dark" href="/?sort=2">Sort SIZE</a>
 
-                <tr>
-                    <th scope="row"> <%= d.toLocaleString() %> </th>
-                    <td> <%= video.name %> <b style="font-size: 10px; margin-left: 10px;" ><%= video.sizeStr %></b> </td>
-                    
-                    <td> <%= video.boomarks.length %> </td>
-                    <td>
-                        <h6><span class="badge badge-success bg-<%= video.status ? 'success' : 'warning text-dark' %>"> <%= video.status ? 'Completo' : 'Não completo' %> </span></h6>
-                    </td>
-                    <td>
-                        <a href="/video/<%= video.id %>" type="button" class="btn btn-sm btn-outline-dark">Abrir</a>
-                    </td>
-                </tr>
-              <% } %>
-            </tbody>
-          </table>
+      <ul class="list-group">
 
+        <% for(var video of videos) {%>
+
+          <% var d = new Date(video.createdAt); %>
+
+          <%
+          var date = new Date(null);
+          date.setSeconds(video.duration);
+          var durationStr = date.toISOString().substr(11, 8);
+          %>
+
+          <a href="/video/<%= video.id %>" class="list-group-item  <%= video.status ? 'list-group-item-success' : '' %>  list-group-item-action d-flex justify-content-between align-items-center">
+            <div class="flex-column">
+              <div><%= video.name %></div>
+              <div><small><%= d.toLocaleString() %></small></div>
+              <div><small><%= video.boomarks.length %> boomarks - <%= video.sizeStr %></small></div>
+             
+            </div>
+            <div class="flex-column">
+              <small><%= durationStr %></small>
+            </div>
+          </a>
+
+        <% } %>
+       
+      </ul>
 
     </div>
   </body>
