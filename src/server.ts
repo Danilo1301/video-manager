@@ -127,8 +127,21 @@ export class Server {
             res.end("Video deleted");
         });
 
- 
+        app.get('/video/:id/changename', (req, res) => {
+            var video = App.Instance.videos.get(req.params.id)!;
 
+            var name = req.query.name;
+          
+            if(typeof name == 'string')
+            {
+                console.log(`Change video name from '${video.name}' to '${name}'`);
+
+                video.name = name;
+                video.save();
+            }
+
+            res.end();
+        });
     }
 
     public getMainVideosList() {

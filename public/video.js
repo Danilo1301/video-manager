@@ -58,6 +58,13 @@ $(".newBoomark").click(() => {
     });
 })
 
+$(".changeVideoName").click(() => {
+    var el = document.getElementsByClassName("videoName")[0];
+    var value = el.value;
+    
+    changeName(value);
+})
+
 $(".markComplete").click(() => {
     fetch(`/video/${videoId}/changestatus`).then(() => {
         //location.href = "/";
@@ -75,7 +82,16 @@ $(".deleteVideo").click(() => {
     }
 })
 
+function changeName(name)
+{
+    console.log(`Change name to '${name}'`);
 
+    fetch(`/video/${videoId}/changename?` + new URLSearchParams({name: name})).then(function(response) {
+        console.log("Changed");
+
+        location.reload();
+    })
+}
 
 for (const e of $(".addby")) {
     const addby = e.attributes.by.value;

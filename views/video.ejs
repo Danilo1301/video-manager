@@ -45,6 +45,15 @@
         <span class="ml-4"><%= path %></span>
         
         <div class='row pt-3'>
+            <div class='col'>
+                <input type="text" class="form-control videoName" value="<%= video.name %>">
+            </div>
+            <div class='col-auto'>
+                <button type="button" class="btn btn-success changeVideoName">Alterar nome</button>
+            </div>
+        </div>
+
+        <div class='row pt-3'>
             
             <div class='col'>
                 <input type="text" class="form-control newBoomarkName">
