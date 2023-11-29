@@ -15,6 +15,7 @@ export enum VIDEO_SORT_BY {
 
 interface BoomarkFile {
     videoName: string
+    name: string
     path: string
     time: number
 }
@@ -170,7 +171,7 @@ export class App {
                 console.log(`video ${boomark.time} | ${time}`);
                 console.log(`--`);
 
-                video.addBoomark(video.fileName, time, -1);
+                video.addBoomark(boomark.name, time, -1);
                 video.save();
 
                 fs.unlinkSync(boomark.path);
@@ -216,11 +217,16 @@ export class App {
             const path = Config.PATH_BOOMARKS + "\\" + dir;
             const stats = await fs.statSync(path);
             
+            const data = JSON.parse(fs.readFileSync(path, "utf-8"));
+
             const boomark: BoomarkFile = {
-                videoName: fs.readFileSync(path, "utf-8"),
+                videoName: data["videoName"],
+                name: data["name"],
                 time: stats.birthtimeMs,
                 path: path
             }
+
+            console.log(boomark)
 
             boomarks.push(boomark);
         }
